@@ -1,0 +1,26 @@
+<monitoring_queries>
+    <query>
+        <name> process </name>
+        <mon_enable> on </mon_enable>
+        <display_columns> c2,c1 </display_columns>
+        <alarm_enable> on </alarm_enable>
+        <alarm_chk_column> cnt </alarm_chk_column>
+        <alarm_threshold_val> 100 </alarm_threshold_val>
+        <mon_sql>
+            SELECT * 
+              FROM INFORMATION_SCHEMA.PROCESSLIST
+             WHERE COMMAND != 'Sleep'
+        </mon_sql>
+    </query>
+    <query>
+        <name> test_table_t1 </name>
+        <mon_enable> yes </mon_enable>
+        <display_columns> c1 </display_columns>
+        <alarm_enable> on </alarm_enable>
+        <alarm_chk_column> cnt </alarm_chk_column>
+        <alarm_threshold_val> 100 </alarm_threshold_val>
+        <mon_sql>
+            select * from t1;
+        </mon_sql>
+    </query>
+</monitoring_queries>
