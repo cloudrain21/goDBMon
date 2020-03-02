@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -13,26 +15,37 @@ func main() {
 		return
 	}
 
-	configMgr := getConfigManager(arguments[1])
-	configMgr.readConfig()
+	configMgr, err := getConfigManager(arguments[1])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = configMgr.readConfig()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	configMgr.showAllDBConfig()
 }
 
-func getConfigManager(configFile string) configManager {
+var errInvalidExtension = errors.New("invalid config file extension")
+
+func getConfigManager(configFile string) (configManager, error) {
 	ext := getExtension(configFile)
 	switch ext {
 	case "xml":
-		return &xmlConfigManager{configFile, dbConfig{}}
+		return &xmlConfigManager{configFile, map[string]DBConfigMap{}}, nil
 	case "json":
-		return &jsonConfigManager{configFile, dbConfig{}}
+		return &xmlConfigManager{configFile, map[string]DBConfigMap{}}, nil
+	default:
+		return nil, errInvalidExtension
 	}
-
-	return nil
 }
 
 func getExtension(path string) string {
-	strArr := strings.Split(path, "/")
-	fileName := strArr[len(strArr)-1]
+	fileName := filepath.Base(path)
 	ext := strings.Split(fileName, ".")[1]
 	return ext
 }

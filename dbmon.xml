@@ -1,32 +1,30 @@
-<!-- comment -->
-
-<database_mon>
-    <common_configs>
-        <query_interval_sec> 3 </query_interval_sec>
-    </common_configs>
+<DatabaseMon>
+    <CommonConfigs>
+        <QueryIntervalSec> 3 </QueryIntervalSec>
+    </CommonConfigs>
   
-    <mon_target_dbs>
-        <database>
-            <name> postgres </name>
-            <driver_name> org.postgresql.Driver </driver_name>
-            <ip> 127.0.0.1 </ip>
-            <port> 5432 </port>
-            <user> test </user>
-            <pass> test </pass>
-            <conn_opt> </conn_opt>
-            <mon_query_config> conf/postgres_mon_query.xml </mon_query_config>
-        </database>
+    <MonTargetDBs>
+        <Database>
+            <Name> postgres </Name>
+            <DriverName> org.postgresql.Driver </DriverName>
+            <IP> 127.0.0.1 </IP>
+            <Port> 5432 </Port>
+            <User> test </User>
+            <Pass> test </Pass>
+            <ConnOpt> </ConnOpt>
+            <MonQueryConfig> conf/postgres_mon_query.xml </MonQueryConfig>
+        </Database>
 
-        <database>
-            <name> mysql </name>
-            <driver_name> com.mysql.cj.jdbc.Driver </driver_name>
-            <ip> 127.0.0.1 </ip>
-            <port> 3333 </port>
-            <user> test </user>
-            <pass> test </pass>
-            <conn_opt> serverTimezone=UTC </conn_opt>
-            <mon_query_config> conf/mysql_mon_query.xml </mon_query_config>
-        </database>
+        <Database>
+            <Name> mysql </Name>
+            <DriverName> com.mysql.cj.jdbc.Driver </DriverName>
+            <IP> 127.0.0.1 </IP>
+            <Port> 3333 </Port>
+            <User> test </User>
+            <Pass> test </Pass>
+            <ConnOpt> serverTimezone=UTC </ConnOpt>
+            <MonQueryConfig> conf/mysql_mon_query.xml </MonQueryConfig>
+        </Database>
 
-    </mon_target_dbs>
-</database_mon>
+    </MonTargetDBs>
+</DatabaseMon>

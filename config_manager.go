@@ -5,75 +5,90 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"reflect"
+	"strings"
 )
+
+var QueryInterval int
 
 type configManager interface {
 	readConfig() error
 	showAllDBConfig()
 }
 
+type DBConfigMap map[string]string
+
 type xmlConfigManager struct {
 	configFile string
-	db         dbConfig
+	dbMap      map[string]DBConfigMap
 }
 
 type jsonConfigManager struct {
 	configFile string
-	db         dbConfig
+	dbMap      map[string]Database
 }
 
-type dbConfig struct {
-	dbName           string
-	commonConfig     map[string]string
-	connectionConfig map[string]string
-	monQueryConfig   []map[string]string
+type DatabaseMon struct {
+	CommonConfigs CommonConfigs
+	MonTargetDBs  MonTargetDBs
 }
 
-type database_mon struct {
-	common_configs
-	mon_target_dbs
+type CommonConfigs struct {
+	QueryIntervalSec int
 }
 
-type common_configs struct {
-	query_interval_sec int
+type MonTargetDBs struct {
+	Database []Database
 }
 
-type mon_target_dbs struct {
-	targetDBs []database
-}
-
-type database struct {
-	name             string
-	driver_name      string
-	ip               string
-	port             int
-	user             string
-	pass             string
-	conn_opt         string
-	mon_query_config string
+type Database struct {
+	Name           string
+	DriverName     string
+	IP             string
+	Port           int
+	User           string
+	Pass           string
+	ConnOpt        string
+	MonQueryConfig string
 }
 
 func (c *xmlConfigManager) readConfig() error {
-	fmt.Printf("ReadConfig function : %s\n", c.configFile)
+	fmt.Printf("ReadConfig function : %s\n", filepath.Base(c.configFile))
 	f, err := os.Open(c.configFile)
 	if err != nil {
 		return err
 	}
 
-	data, err := ioutil.ReadAll(f)
+	bytes, err := ioutil.ReadAll(f)
 	if err != nil {
 		return err
 	}
 
-	v := database_mon{}
-	err = xml.Unmarshal([]byte(data), &v)
+	var DatabaseMon DatabaseMon
+	err = xml.Unmarshal(bytes, &DatabaseMon)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(v)
+	QueryInterval = DatabaseMon.CommonConfigs.QueryIntervalSec
+
+	for _, cfg := range DatabaseMon.MonTargetDBs.Database {
+		dbName := strings.TrimSpace(cfg.Name)
+		c.dbMap[dbName] = RegOneDBConfig(cfg)
+	}
+
+	fmt.Println(c.dbMap["mysql"])
 
 	return nil
+}
+
+func RegOneDBConfig(database Database) map[string]string {
+	m := make(map[string]string)
+
+	fmt.Printf("%s\n", reflect.ValueOf(&database).Elem().Type().Field(0).Tag)
+
+	return m
 }
 
 func (c *xmlConfigManager) showAllDBConfig() {
