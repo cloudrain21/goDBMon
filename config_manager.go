@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 )
 
@@ -17,11 +16,9 @@ type configManager interface {
 	showAllDBConfig()
 }
 
-type DBConfigMap map[string]string
-
 type xmlConfigManager struct {
 	configFile string
-	dbMap      map[string]DBConfigMap
+	dbMap      map[string]Database
 }
 
 type jsonConfigManager struct {
@@ -65,34 +62,52 @@ func (c *xmlConfigManager) readConfig() error {
 		return err
 	}
 
-	var DatabaseMon DatabaseMon
-	err = xml.Unmarshal(bytes, &DatabaseMon)
-	if err != nil {
-		return err
+	r := strings.NewReader(string(bytes))
+	parser := xml.NewDecoder(r)
+
+	for {
+		token, err := parser.Token()
+		if err != nil {
+			return fmt.Errorf("Could not parse token : %s", err.Error())
+		}
+		switch t := token.(type) {
+		case xml.StartElement:
+			elmt := xml.StartElement(t)
+			name := elmt.Name.Local
+			if name == "QueryIntervalSec" {
+				decErr := parser.DecodeElement(&QueryInterval, &elmt)
+				if decErr != nil {
+					panic("Could not decode element" + decErr.Error())
+				}
+				fmt.Println(QueryInterval)
+			} else if name == "Database" {
+				database := &Database{}
+				decErr := parser.DecodeElement(database, &elmt)
+				if decErr != nil {
+					panic("Could not decode element" + decErr.Error())
+				}
+				c.dbMap[database.Name] = *database
+			}
+		case xml.EndElement:
+		case xml.CharData:
+		case xml.Comment:
+		case xml.ProcInst:
+		case xml.Directive:
+			continue
+		default:
+			return fmt.Errorf("Unknown token")
+		}
 	}
-
-	QueryInterval = DatabaseMon.CommonConfigs.QueryIntervalSec
-
-	for _, cfg := range DatabaseMon.MonTargetDBs.Database {
-		dbName := strings.TrimSpace(cfg.Name)
-		c.dbMap[dbName] = RegOneDBConfig(cfg)
-	}
-
-	fmt.Println(c.dbMap["mysql"])
 
 	return nil
 }
 
-func RegOneDBConfig(database Database) map[string]string {
-	m := make(map[string]string)
-
-	fmt.Printf("%s\n", reflect.ValueOf(&database).Elem().Type().Field(0).Tag)
-
-	return m
-}
-
 func (c *xmlConfigManager) showAllDBConfig() {
-	fmt.Printf("showAllDBConfig function : %s\n", c.configFile)
+	fmt.Printf("QueryInterval : %d\n", QueryInterval)
+
+	for _, db := range c.dbMap {
+		fmt.Println(db)
+	}
 }
 
 func (c *jsonConfigManager) readConfig() error {

@@ -16,16 +16,10 @@ func main() {
 	}
 
 	configMgr, err := getConfigManager(arguments[1])
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	checkError(err)
 
 	err = configMgr.readConfig()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	//checkError(err)
 
 	configMgr.showAllDBConfig()
 }
@@ -36,9 +30,9 @@ func getConfigManager(configFile string) (configManager, error) {
 	ext := getExtension(configFile)
 	switch ext {
 	case "xml":
-		return &xmlConfigManager{configFile, map[string]DBConfigMap{}}, nil
+		return &xmlConfigManager{configFile, map[string]Database{}}, nil
 	case "json":
-		return &xmlConfigManager{configFile, map[string]DBConfigMap{}}, nil
+		return &xmlConfigManager{configFile, map[string]Database{}}, nil
 	default:
 		return nil, errInvalidExtension
 	}
@@ -48,4 +42,11 @@ func getExtension(path string) string {
 	fileName := filepath.Base(path)
 	ext := strings.Split(fileName, ".")[1]
 	return ext
+}
+
+func checkError(err error) {
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

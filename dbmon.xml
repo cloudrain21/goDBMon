@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <DatabaseMon>
     <CommonConfigs>
         <QueryIntervalSec> 3 </QueryIntervalSec>
@@ -8,6 +9,7 @@
             <Name> postgres </Name>
             <DriverName> org.postgresql.Driver </DriverName>
             <IP> 127.0.0.1 </IP>
+            <!--> <-->
             <Port> 5432 </Port>
             <User> test </User>
             <Pass> test </Pass>
