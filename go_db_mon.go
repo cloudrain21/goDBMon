@@ -24,7 +24,10 @@ func main() {
 	configMgr.showAllDBConfig()
 }
 
-var errInvalidExtension = errors.New("invalid config file extension")
+var (
+	errInvalidExtension = errors.New("invalid config file extension")
+	errTest             = errors.New("this is test errorn")
+)
 
 func getConfigManager(configFile string) (configManager, error) {
 	ext := getExtension(configFile)
