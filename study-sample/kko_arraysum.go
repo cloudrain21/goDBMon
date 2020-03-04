@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func splitIntoTwo(arr []int32) int32 {
 	var retCount int32 = 0
