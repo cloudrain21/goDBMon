@@ -17,6 +17,6 @@ func (x XmlConfigManager) ShowConfig() {
 	log.Printf("show configuration : %s", x.configFile)
 }
 
-func NewXmlConfigManager(configFile string) *XmlConfigManager {
+func NewXmlConfigManager(configFile string) ConfigManager {
 	return &XmlConfigManager{configFile}
 }

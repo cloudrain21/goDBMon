@@ -4,19 +4,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type JsonManager struct {
+type JsonConfigManager struct {
 	configFile string
 }
 
-func (j *JsonManager) ReadConfig() error {
+func (j *JsonConfigManager) ReadConfig() error {
 	log.Println("read json config...")
 	return nil
 }
 
-func (j JsonManager) ShowConfig() {
+func (j JsonConfigManager) ShowConfig() {
 	log.Println("show json config...")
 }
 
-func NewJsonConfigManager(configFile string) *JsonManager {
-	return &JsonManager{configFile}
+func NewJsonConfigManager(configFile string) ConfigManager {
+	return &JsonConfigManager{configFile}
 }
