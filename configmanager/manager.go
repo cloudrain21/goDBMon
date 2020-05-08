@@ -7,7 +7,7 @@ var (
 	InvalidSyntax    = errors.New("invalid config syntax")
 )
 
-type InterConfigManager interface {
+type ConfigManager interface {
 	ReadConfig() error
 	ShowConfig()
 }
