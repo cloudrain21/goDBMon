@@ -16,3 +16,7 @@ func (j *JsonManager) ReadConfig() error {
 func (j JsonManager) ShowConfig() {
 	log.Println("show json config...")
 }
+
+func NewJsonConfigManager(configFile string) *JsonManager {
+	return &JsonManager{configFile}
+}
