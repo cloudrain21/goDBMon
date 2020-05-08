@@ -1,55 +1,48 @@
 package main
 
 import (
-	"errors"
-	"fmt"
+	cmgr "github.com/cloudrain21/goDBMon/configmanager"
+	"github.com/cloudrain21/goDBMon/logger"
+	log "github.com/sirupsen/logrus"
 	"os"
-	"path/filepath"
 	"strings"
 )
+
+func init() {
+	logger.Configure(logger.NewFileLogger("dbmon.log"))
+}
 
 func main() {
 	arguments := os.Args
 	if len(arguments) != 2 {
-		fmt.Println("Usage: goDBMon /path/to/dbmon.xml")
+		log.Println("Usage: goDBMon /path/to/dbmon.xml")
 		return
 	}
 
-	configMgr, err := getConfigManager(arguments[1])
-	checkError(err)
+	configFile := arguments[1]
 
-	err = configMgr.readConfig()
-	//checkError(err)
+	configManager := CreateConfigManager(configFile)
+	err := configManager.Mgr.ReadConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	configManager.Mgr.ShowConfig()
 
-	configMgr.showAllDBConfig()
 }
 
-var (
-	errInvalidExtension = errors.New("invalid config file extension")
-	errTest             = errors.New("this is test errorn")
-)
+func CreateConfigManager(configFile string) *cmgr.ConfigManager {
+	l := strings.Split(configFile, ".")
+	ext := l[len(l)-1]
 
-func getConfigManager(configFile string) (configManager, error) {
-	ext := getExtension(configFile)
 	switch ext {
 	case "xml":
-		return &xmlConfigManager{configFile, map[string]Database{}}, nil
+		log.Println("xml file extension")
+		return cmgr.NewConfigManager(cmgr.NewXmlConfigManager(configFile))
 	case "json":
-		return &xmlConfigManager{configFile, map[string]Database{}}, nil
+		log.Println("json file extension")
+		return cmgr.NewConfigManager(cmgr.NewJsonConfigManager(configFile))
 	default:
-		return nil, errInvalidExtension
-	}
-}
-
-func getExtension(path string) string {
-	fileName := filepath.Base(path)
-	ext := strings.Split(fileName, ".")[1]
-	return ext
-}
-
-func checkError(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Println("default file extension")
+		return cmgr.NewConfigManager(cmgr.NewXmlConfigManager(configFile))
 	}
 }
