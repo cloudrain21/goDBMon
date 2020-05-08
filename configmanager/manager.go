@@ -13,12 +13,12 @@ type InterConfigManager interface {
 }
 
 type ConfigManager struct {
-	mgr InterConfigManager
+	Mgr InterConfigManager
 }
 
 func NewConfigManager(mgrinter InterConfigManager) *ConfigManager {
 	cmgr := new(ConfigManager)
 
-	cmgr.mgr = mgrinter
+	cmgr.Mgr = mgrinter
 	return cmgr
 }
